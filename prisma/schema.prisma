@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  role Role @default(GUEST)
+  loans Loan[]
+  @@map("users")
+
+}
+
+model Loan{
+  id Int @id @default(autoincrement())
+  checkoutDate DateTime @default(now()) @map("checkout_date")
+  dueDate DateTime @map("due_date")
+  returnDate DateTime?
+  borrower User @relation(fields: [borrowerId], references: [id])
+  borrowerId  Int @map("user_id")
+  copies LoanCopy[]
+  @@map("loans")
+
+}
+
+model LoanCopy {
+  loanId    Int
+  copyId    Int
+  loan      Loan        @relation(fields: [loanId], references: [id])
+  copy      MediaCopy   @relation(fields: [copyId], references: [id])
+
+  @@id([loanId, copyId])
+  @@map("loan_copies")
+}
+
+model MediaCopy {
+  id            Int        @id @default(autoincrement())
+  mediaId       Int        @map("media_id")
+  copyNumber    Int        @map("copy_number")
+  currentStatus Status     @default(AVAILABLE)
+  media         Media      @relation(fields: [mediaId], references: [id])
+  loans         LoanCopy[]
+  @@map("media_copies")
+}
+
+model Media {
+  id              Int         @id @default(autoincrement())
+  title           String
+  mediaType       Type
+  publicationYear DateTime?   @map("publication_year")
+  authorId        Int         @map("author_id")
+  author          Author      @relation(fields: [authorId], references: [id])
+  copies          MediaCopy[]
+  @@map("media")
+}
+
+model Author {
+  id    Int     @id @default(autoincrement())
+  name  String
+  media Media[]
+  @@map("authors")
+}
+
+
+enum Role {
+  GUEST
+  EMPLOYEE
+  ADMIN
+}
+
+enum Status{
+  CHECKEDOUT
+  AVAILABLE
+}
+
+enum Type{
+  BOOK
+  MAGEZINE
+  DVD
+}

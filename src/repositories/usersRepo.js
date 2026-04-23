@@ -7,3 +7,12 @@ export async function getAll() {
   console.log('finished repo');
   return users;
 }
+
+export async function getByID(id) {
+  console.log('in repo');
+  const user = await prisma.user.findUnique({
+    where: {id}
+  });
+  console.log('finished repo');
+  return user;
+}

@@ -1,5 +1,6 @@
 import {getAll,
-    getByID
+    getByID,
+    createUser
 } from '../repositories/usersRepo.js';
 
 
@@ -18,3 +19,4 @@ export async function getUserByID(ID){
         throw error;
     }
 }
+

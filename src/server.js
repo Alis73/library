@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import usersRoutes from './routes/usersRoutes.js';
+import authRoutes from './routes/authRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,6 +10,7 @@ app.use(express.json());
 if (process.env.NODE_ENV !== 'test') app.use(morgan('tiny'));
 
 app.use('/api/users', usersRoutes);
+app.use('/api/auth', authRoutes);
 
 
 

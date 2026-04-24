@@ -8,13 +8,13 @@ try {
   // Create users
   const users = await Promise.all([
     prisma.user.create({
-      data: { name: "Alisson", email: "alisson@test.com", role: "ADMIN" }
+      data: { name: "Alisson", email: "alisson@test.com", password:"1234", role: "ADMIN" }
     }),
     prisma.user.create({
-      data: { name: "John Doe", email: "john@test.com", role: "GUEST" }
+      data: { name: "John Doe", email: "john@test.com", password:"1234", role: "GUEST" }
     }),
     prisma.user.create({
-      data: { name: "Jane Smith", email: "jane@test.com", role: "EMPLOYEE" }
+      data: { name: "Jane Smith", email: "jane@test.com", password:"1234", role: "EMPLOYEE" }
     }),
   ]);
 

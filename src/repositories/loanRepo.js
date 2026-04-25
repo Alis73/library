@@ -5,25 +5,25 @@ export async function getAll() {
   return loans;
 }
 
-export async function getByID(id) {
-  console.log('in repo');
-  const user = await prisma.user.findUnique({
+export async function getLoanByID(id) {
+  const loan = await prisma.loan.findUnique({
     where: {id}
   });
-  return user;
+  return loan;
 }
 
-export async function createUser(data){
-    try {
-    const newUser = await prisma.user.create({ data, omit: {password :true}
-    });
-    return newUser;
-  } catch (error) {
-    if (error.code === 'P2002') {
-      const err = new Error('Email has already been used');
-      err.status = 409;
-      throw err;
+export async function countActiveLoans(userId) {
+  return await prisma.loan.count({
+    where: {
+      borrowerId: userId,
+      returnDate: null 
     }
-    throw error;
-  }
+  });
+}
+
+export async function createLoanRecord(data){
+    const newLoan = await prisma.loan.create({ data
+    });
+    return newLoan;
+  
 }

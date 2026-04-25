@@ -3,12 +3,10 @@ import prisma from '../config/db.js';
 
 export async function getAll() {
   const users = await prisma.user.findMany({omit: { password:true}});
-  console.log('finished repo');
   return users;
 }
 
 export async function getByID(id) {
-  console.log('in repo');
   const user = await prisma.user.findUnique({
     where: {id}
   });

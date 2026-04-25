@@ -2,6 +2,7 @@ import {getAll,
     getByID,
     createUser,
     update,
+    remove
 
 } from '../repositories/usersRepo.js';
 import bcrypt from 'bcrypt';
@@ -41,5 +42,15 @@ export async function updateUser(id, updatedData) {
   const error = new Error('User not found');
   error.status = 404;
   throw error;
+}
+
+export async function deleteUser(id) {
+    const deletedUser = await remove(id);
+    if (deletedUser) return deletedUser;
+    else {
+        const error = new Error('User not found');
+        error.status = 404;
+        throw error;
+    }
 }
 

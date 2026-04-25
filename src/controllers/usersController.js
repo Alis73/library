@@ -1,6 +1,7 @@
 import {getAllUsers,
     getUserByID,
-    updateUser
+    updateUser,
+    deleteUser
 } from '../services/usersService.js';
 
 
@@ -20,4 +21,10 @@ export async function updateUserHandler(req, res) {
     const {email, password} = req.body;
     const updatedUser = await updateUser(id, {email, password});
     res.status(200).json(updatedUser);
+}
+
+export async function removeUserHandler(req, res) {
+    const id = parseInt(req.body.id);
+    await deleteUser(id);
+    res.status(204).send();
 }

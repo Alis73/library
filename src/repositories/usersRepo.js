@@ -52,3 +52,14 @@ export async function findByEmail(email){
         }
     }
 
+     export async function remove(id) {
+        try {
+            const removeUser = await prisma.user.delete({where: {id}});
+            return removeUser;
+        } catch (error) {
+            if (error.code === 'P2025') return null;
+        throw error;
+        }
+    }
+
+

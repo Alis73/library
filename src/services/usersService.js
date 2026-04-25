@@ -11,7 +11,6 @@ import jwt from 'jsonwebtoken';
 
 
 export async function getAllUsers() {
-    console.log('in service');
   return getAll();
 }
 

@@ -1,9 +1,11 @@
 import {getAll,
     getLoanByID,
-    createLoanRecord
+    createLoanRecord,
+    removeLoan,
+    updateLoan
 } from '../repositories/loanRepo.js';
 import { getByID } from '../repositories/usersRepo.js';
-import { createLoanCopy, countActiveItems } from '../repositories/loanCopyRepo.js';
+import { createLoanCopy, countActiveItems, deleteLoanCopies } from '../repositories/loanCopyRepo.js';
 import { findCopyById, updateCopyStatus } from '../repositories/mediaCopyRepo.js';
 
 
@@ -52,5 +54,43 @@ export async function createLoan(userId, copyIds) {
   }
 
   return loan;
+
+}
+
+export async function getRidLoan(loanId){
+ // check if loan exists
+  const loan = await getLoanByID(loanId);
+  if (!loan) {
+    const error = new Error(`Loan ${loanId} does not exist`);
+    error.status = 404;
+    throw error;
+  }
+
+  // check if loan is still active
+  if (loan.returnDate === null) {
+    const error = new Error('Cannot delete an active loan');
+    error.status = 409;
+    throw error;
+  }
+
+  // delete loan_copies rows first
+  await deleteLoanCopies(loanId);
+
+  // then delete the loan
+  return await removeLoan(loanId);
+
+
+}
+
+export async function updateLoanStatus(id){
+    const updatedLoan = await updateLoan(id);
+
+    if(!updatedLoan){
+        const err = new Error(`Loan with ID ${id} can not be found`);
+        err.status = 404;
+        throw err;
+
+    }
+    return updatedLoan;
 
 }

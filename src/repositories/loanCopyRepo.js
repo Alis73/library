@@ -19,3 +19,18 @@ export async function createLoanCopy(loanId, copyId) {
     }
   });
 }
+
+export async function getLoanCopies(loanId){
+    
+  const loanCopies = await prisma.loanCopy.findMany({
+    where: {loanId}
+  });
+  return loanCopies;
+}
+
+export async function deleteLoanCopies(loanId) {
+  return await prisma.loanCopy.deleteMany({
+    where: { loanId }
+  });
+}
+

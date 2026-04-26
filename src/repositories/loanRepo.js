@@ -27,3 +27,30 @@ export async function createLoanRecord(data){
     return newLoan;
   
 }
+export async function removeLoan(id) {
+  try {
+    const deletedLoan = await prisma.loan.delete({
+      where: { id },
+    });
+    return deletedLoan;
+  } catch (error) {
+    if (error.code === 'P2025') return null;
+    throw error;
+  }
+}
+
+export async function updateLoan(id){
+
+    try {
+     const updatedLoan = await prisma.loan.update({
+    where: { id },
+    data: {
+      returnDate: new Date() 
+    }
+  });
+    return updatedLoan;
+  } catch (error) {
+    if (error.code === 'P2025') return null;
+    throw error;
+  }
+}

@@ -1,6 +1,8 @@
 import {getAllLoans,
     getLoanById,
-    createLoan
+    createLoan,
+    getRidLoan,
+    updateLoanStatus
 } from '../services/loanService.js';
 
 
@@ -27,4 +29,24 @@ export async function createLoanHandler(req,res,next){
   } catch (err) {
     next(err);
   }
+}
+
+export async function deleteLoanHandler(req,res,next){
+   try{
+    const loanId = parseInt(req.params.id);
+    const loan = await getRidLoan(loanId)
+    res.status(200).json(loan);
+    } catch (err) {
+    next(err); 
+  }
+}
+
+export async function updateLoanHandler(req,res,next){
+    try{
+    const id = parseInt(req.params.id);
+    const updatedLoan = await updateLoanStatus(id);
+    res.status(200).json(updatedLoan);
+    }catch (err) {
+  next(err);
+    }
 }

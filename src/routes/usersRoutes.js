@@ -2,12 +2,14 @@ import express from 'express';
 import { getAllUsersHandler,
     getUserByIDHandler,
     updateUserHandler,
-    removeUserHandler
+    removeUserHandler,
+    getMyProfileHandler
 } from '../controllers/usersController.js';
 import {validateID} from '../middleware/paramValidator.js';
 import { validateUpdateUser } from '../middleware/userValidators.js';
 
 import { authenticate } from '../middleware/authenticate.js';
+import { authorizeRoles } from '../middleware/authorizeRoles.js';
 
 
 
@@ -15,8 +17,11 @@ import { authenticate } from '../middleware/authenticate.js';
 
 const router = express.Router();
 
-router.get('/', getAllUsersHandler);
-router.get('/:id', validateID, getUserByIDHandler);
+router.get('/me', authenticate, getMyProfileHandler);
+router.get('/',  authenticate, authorizeRoles('EMPLOYEE','ADMIN'), getAllUsersHandler);//
+router.get('/:id', authenticate, authorizeRoles('EMPLOYEE','ADMIN'), validateID, getUserByIDHandler);//
 router.put('/me', validateUpdateUser, updateUserHandler);
 router.delete('/me', removeUserHandler);
+
+
 export default router

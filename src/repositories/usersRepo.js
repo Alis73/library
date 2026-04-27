@@ -28,7 +28,14 @@ export async function getAll({ search, sortBy, order, offset, limit }) {
 
 export async function getByID(id) {
   const user = await prisma.user.findUnique({
-    where: {id}
+    where: {id},
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true
+      
+    }
   });
   return user;
 }

@@ -48,3 +48,13 @@ export async function removeUserHandler(req, res) {
     await deleteUser(id);
     res.status(204).send();
 }
+
+export async function getMyProfileHandler(req, res, next) {
+  try {
+    const id = req.user.id;
+    const user = await getUserByID(id);
+    res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+}

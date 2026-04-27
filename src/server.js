@@ -14,7 +14,7 @@ if (process.env.NODE_ENV !== 'test') app.use(morgan('tiny'));
 
 app.use('/api/users', usersRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/loans', loanRoutes);
+app.use('/api/loan', loanRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/author', authorRoutes);
 

@@ -17,7 +17,8 @@ export async function getMediaById(id){
 }
 
 export async function updateMedia(id, data) {
-  return await updateMediaById(id, data);
+    await getMediaById(id); // handles 404
+    return await updateMediaById(id, data);
 }
 
 export async function createMedia(data) {
@@ -60,7 +61,6 @@ export async function deleteMedia(id) {
   // check media exists
     await getMediaById(id);
  
-
   // check no copies are checked out
   const checkedOutCopies = await findCheckedOutCopies(id);
   if (checkedOutCopies.length > 0) {

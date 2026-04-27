@@ -14,7 +14,7 @@ import {validateID} from '../middleware/paramValidator.js';
 const router = express.Router();
 
 router.get('/', getAllUsersHandler);
-router.get('/:id', validateID, handleValidationErrors, getUserByIDHandler);
+router.get('/:id', validateID, getUserByIDHandler);
 router.put('/me',updateUserHandler);
 router.delete('/me', removeUserHandler);
 export default router

@@ -12,12 +12,12 @@ const router = express.Router();
 
 
 router.get('/', getAllMediaHandler);
-router.get('/:id', validateID, handleValidationErrors,  getMediaByIdHandler);
+router.get('/:id', validateID,  getMediaByIdHandler);
 router.post('/', createMediaHandler);
 router.post('/', createMediaHandler);
 router.post('/', createMediaHandler);
-router.delete('/:id',validateID, handleValidationErrors, deleteMediaHandler);
-router.put('/:id', validateID, handleValidationErrors, updateMediaHandler);
+router.delete('/:id',validateID, deleteMediaHandler);
+router.put('/:id', validateID, updateMediaHandler);
 
 
 

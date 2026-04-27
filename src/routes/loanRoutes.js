@@ -5,17 +5,16 @@ import {getAllLoansHandler,
     deleteLoanHandler,
     updateLoanHandler
 } from '../controllers/loanController.js'
-import { handleValidationErrors} from '../middleware/handleValidationError.js';
 import {validateID} from '../middleware/paramValidator.js';
 
 const router = express.Router();
 
 
 router.get('/', getAllLoansHandler);
-router.get('/:id', validateID, handleValidationErrors, getLoanByIDHandler);
+router.get('/:id', validateID, getLoanByIDHandler);
 router.post('/', createLoanHandler);
-router.delete('/:id',validateID, handleValidationErrors, deleteLoanHandler);
-router.put('/:id',validateID, handleValidationErrors, updateLoanHandler);
+router.delete('/:id',validateID, deleteLoanHandler);
+router.put('/:id',validateID, updateLoanHandler);
 
 
 

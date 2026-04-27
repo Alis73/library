@@ -42,6 +42,15 @@ export async function createLoan(userId, copyIds) {
     throw error;
   }
 
+  for (const copyId of copyIds) {
+  const copy = await findCopyById(copyId);
+  if (!copy) {
+    const err = new Error(`Copy with ID ${copyId} does not exist`);
+    err.status = 404;
+    throw err;
+  }
+}
+
   // Rule 3 — calculate due date
   const dueDate = new Date();
   dueDate.setDate(dueDate.getDate() + 30);

@@ -2,7 +2,8 @@ import {getAll,
     getLoanByID,
     createLoanRecord,
     removeLoan,
-    updateLoan
+    updateLoan,
+    getLoansByUserID
 } from '../repositories/loanRepo.js';
 import { getByID } from '../repositories/usersRepo.js';
 import { createLoanCopy, countActiveItems, deleteLoanCopies } from '../repositories/loanCopyRepo.js';
@@ -107,4 +108,8 @@ export async function updateLoanStatus(id){
     }
     return updatedLoan;
 
+}
+
+export async function getLoansByUserId(userId) {
+  return await getLoansByUserID(userId);
 }

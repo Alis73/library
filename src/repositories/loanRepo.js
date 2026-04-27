@@ -54,3 +54,9 @@ export async function updateLoan(id){
     throw error;
   }
 }
+
+export async function getLoansByUserID(userId) {
+  return await prisma.loan.findMany({
+    where: { borrowerId: userId }
+  });
+}

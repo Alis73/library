@@ -3,7 +3,8 @@ import {getAllLoansHandler,
     getLoanByIDHandler,
     createLoanHandler,
     deleteLoanHandler,
-    updateLoanHandler
+    updateLoanHandler,
+    getMyLoansHandler
 } from '../controllers/loanController.js'
 import {validateID} from '../middleware/paramValidator.js';
 import { validateCreateLoan } from '../middleware/loanValidator.js';
@@ -14,8 +15,9 @@ import { authorizeRoles } from '../middleware/authorizeRoles.js';
 const router = express.Router();
 
 
-router.get('/', getAllLoansHandler);  //doesnt take a body
-router.get('/:id', validateID, getLoanByIDHandler);
+router.get('/', authenticate, authorizeRoles('EMPLOYEE','ADMIN'), getAllLoansHandler);  //doesnt take a body
+router.get('/my-loans', authenticate, authorizeRoles('GUEST'), getMyLoansHandler);
+router.get('/:id', authenticate, authorizeRoles('EMPLOYEE', 'ADMIN'), validateID, getLoanByIDHandler);
 router.post('/', authenticate, authorizeRoles('EMPLOYEE','ADMIN'), validateCreateLoan, createLoanHandler);
 router.delete('/:id',validateID, deleteLoanHandler);
 router.put('/:id',validateID, updateLoanHandler);

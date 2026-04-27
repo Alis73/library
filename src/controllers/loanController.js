@@ -2,7 +2,8 @@ import {getAllLoans,
     getLoanById,
     createLoan,
     getRidLoan,
-    updateLoanStatus
+    updateLoanStatus,
+    getLoansByUserId
 } from '../services/loanService.js';
 
 
@@ -49,4 +50,14 @@ export async function updateLoanHandler(req,res,next){
     }catch (err) {
         next(err);
     }
+}
+
+export async function getMyLoansHandler(req, res, next) {
+  try {
+    const userId = req.user.id; // from JWT token
+    const loans = await getLoansByUserId(userId);
+    res.status(200).json(loans);
+  } catch (err) {
+    next(err);
+  }
 }

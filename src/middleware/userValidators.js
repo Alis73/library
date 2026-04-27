@@ -43,3 +43,21 @@ export const validateLogin = [
         .withMessage('Password is required'),
         handleValidationErrors ,
 ];
+
+export const validateUpdateUser = [
+  body('email')
+    .optional()
+    .trim()
+    .isEmail()
+    .withMessage('Email must be a valid email address')
+    .normalizeEmail(),
+
+  body('password')
+    .optional()
+    .isLength({ min: 8, max: 64 })
+    .withMessage(
+      'Password must contain at least 8 characters and at most 64 characters'
+    ),
+
+  handleValidationErrors,
+];

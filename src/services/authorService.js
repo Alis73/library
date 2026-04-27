@@ -1,4 +1,4 @@
-import { findAuthorByID, allAuhtors, newAuthor, deleteAuthorRecord , updateAuthorRecord} from '../repositories/authorsRepo.js';
+import { findAuthorByID, allAuhtors, newAuthor, deleteAuthorRecord , updateAuthorRecord, findAuthorByName} from '../repositories/authorsRepo.js';
 import { findMediaByAuthorId, deleteMediaByAuthorId } from '../repositories/mediaRepo.js';
 import { findCheckedOutCopies, deleteMediaCopies } from '../repositories/mediaCopyRepo.js';
 
@@ -17,6 +17,14 @@ export async function getAuthorById(id) {
 }
 
 export async function createAuthor(data) {
+   // check if author already exists
+  const existingAuthor = await findAuthorByName(data.name);
+  if (existingAuthor) {
+    const err = new Error(`Author ${data.name} already exists`);
+    err.status = 409;
+    throw err;
+  }
+
   return await newAuthor(data);
 }
 

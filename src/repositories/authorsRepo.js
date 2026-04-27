@@ -39,3 +39,13 @@ export async function updateAuthorRecord(id, data) {
     data
   });
 }
+export async function findAuthorByName(name) {
+  return await prisma.author.findFirst({
+    where: {
+      name: {
+        equals: name,
+        mode: 'insensitive' // case insensitive so "robert martin" = "Robert Martin"
+      }
+    }
+  });
+}

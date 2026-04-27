@@ -8,10 +8,10 @@ import { authorizeRoles } from '../middleware/authorizeRoles.js';
 
 const router = express.Router();
 
-router.get('/', getAllAuthorsHandler);
-router.get('/:id',validateID, getAuthorByIdHandler);
-router.post('/', validateCreateAuthor, createAuthorHandler);
-router.delete('/:id', deleteAuthorHandler);
-router.put('/:id', validateID, validateUpdateAuthor, updateAuthorHandler);
+router.get('/', getAllAuthorsHandler); //like searching library for a book
+router.get('/:id',authenticate , authorizeRoles('EMPLOYEE', 'ADMIN'), validateID, getAuthorByIdHandler); //emp or admin
+router.post('/', authenticate ,authorizeRoles('EMPLOYEE', 'ADMIN'), validateCreateAuthor, createAuthorHandler); //emp or admin
+router.delete('/:id', authenticate , authorizeRoles('ADMIN'),validateID, deleteAuthorHandler); //emp or admin
+router.put('/:id', authenticate ,authorizeRoles('EMPLOYEE', 'ADMIN'),validateID, validateUpdateAuthor, updateAuthorHandler); //emp or admin
 
 export default router;

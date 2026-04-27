@@ -49,7 +49,7 @@ export async function deleteAuthorHandler(req, res, next) {
   try {
     const id = parseInt(req.params.id);
     const deletedAuthor = await deleteAuthor(id);
-    res.status(200).json(deletedAuthor);
+    res.status(200).json({ message: `${deletedAuthor.name} has been deleted from database` });
   } catch (err) {
     next(err);
   }

@@ -47,6 +47,6 @@ export async function updateLoanHandler(req,res,next){
     const updatedLoan = await updateLoanStatus(id);
     res.status(200).json(updatedLoan);
     }catch (err) {
-  next(err);
+        next(err);
     }
 }

@@ -36,10 +36,11 @@ export async function deleteLoanHandler(req,res,next){
    try{
     const loanId = parseInt(req.params.id);
     const loan = await getRidLoan(loanId)
-    res.status(200).json(loan);
-    } catch (err) {
-    next(err); 
+    res.status(200).json({ message: `Loan ${loan.id} has been removed` });
+  } catch (err) {
+    next(err);
   }
+  
 }
 
 export async function updateLoanHandler(req,res,next){

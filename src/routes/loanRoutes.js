@@ -19,7 +19,7 @@ router.get('/', authenticate, authorizeRoles('EMPLOYEE','ADMIN'), getAllLoansHan
 router.get('/my-loans', authenticate, authorizeRoles('GUEST'), getMyLoansHandler); //
 router.get('/:id', authenticate, authorizeRoles('EMPLOYEE', 'ADMIN'), validateID, getLoanByIDHandler);//
 router.post('/', authenticate, authorizeRoles('EMPLOYEE','ADMIN'), validateCreateLoan, createLoanHandler);
-router.delete('/:id',validateID, deleteLoanHandler);
+router.delete('/:id',authenticate, authorizeRoles('ADMIN'), validateID, deleteLoanHandler);
 router.put('/:id', authenticate, authorizeRoles('EMPLOYEE', 'ADMIN'),validateID, updateLoanHandler);
 
 

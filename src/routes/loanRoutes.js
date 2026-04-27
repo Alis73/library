@@ -8,12 +8,14 @@ import {getAllLoansHandler,
 import {validateID} from '../middleware/paramValidator.js';
 import { validateCreateLoan } from '../middleware/loanValidator.js';
 
+import { authenticate } from '../middleware/authenticate.js';
+
 const router = express.Router();
 
 
 router.get('/', getAllLoansHandler);  //doesnt take a body
 router.get('/:id', validateID, getLoanByIDHandler);
-router.post('/', validateCreateLoan, createLoanHandler);
+router.post('/', authenticate, validateCreateLoan, createLoanHandler);
 router.delete('/:id',validateID, deleteLoanHandler);
 router.put('/:id',validateID, updateLoanHandler);
 

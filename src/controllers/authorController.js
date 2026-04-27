@@ -1,4 +1,4 @@
-import { getAllAuthors, getAuthorById, createAuthor, deleteAuthor } from '../services/authorService.js';
+import { getAllAuthors, getAuthorById, createAuthor, deleteAuthor, updateAuthor } from '../services/authorService.js';
 
 export async function getAllAuthorsHandler(req, res, next) {
   try {
@@ -34,6 +34,21 @@ export async function deleteAuthorHandler(req, res, next) {
     const id = parseInt(req.params.id);
     const deletedAuthor = await deleteAuthor(id);
     res.status(200).json(deletedAuthor);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateAuthorHandler(req, res, next) {
+  try {
+    const id = parseInt(req.params.id);
+    const { name } = req.body;
+
+    const data = {};
+    if (name) data.name = name.trim();
+
+    const updatedAuthor = await updateAuthor(id, data);
+    res.status(200).json(updatedAuthor);
   } catch (err) {
     next(err);
   }

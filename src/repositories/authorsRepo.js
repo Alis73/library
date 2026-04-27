@@ -20,3 +20,10 @@ export async function deleteAuthorRecord(id) {
     where: { id }
   });
 }
+
+export async function updateAuthorRecord(id, data) {
+  return await prisma.author.update({
+    where: { id },
+    data
+  });
+}

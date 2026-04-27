@@ -1,4 +1,4 @@
-import { findAuthorByID, allAuhtors, newAuthor, deleteAuthorRecord } from '../repositories/authorsRepo.js';
+import { findAuthorByID, allAuhtors, newAuthor, deleteAuthorRecord , updateAuthorRecord} from '../repositories/authorsRepo.js';
 import { findMediaByAuthorId, deleteMediaByAuthorId } from '../repositories/mediaRepo.js';
 import { findCheckedOutCopies, deleteMediaCopies } from '../repositories/mediaCopyRepo.js';
 
@@ -46,4 +46,9 @@ export async function deleteAuthor(id) {
 
   // delete the author
   return await deleteAuthorRecord(id);
+}
+
+export async function updateAuthor(id, data) {
+  await getAuthorById(id); // throws 404 if not found
+  return await updateAuthorRecord(id, data);
 }

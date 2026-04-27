@@ -1,8 +1,22 @@
 import prisma from '../config/db.js';
 
-export async function allMedia(){
-    const media = await prisma.media.findMany();
-    return media;
+export async function allMedia({ search, sortBy, order, offset, limit }) {
+  const conditions = {};
+
+  if (search) {
+    conditions.OR = [
+      { title: { contains: search, mode: 'insensitive' } }
+    ];
+  }
+
+  const media = await prisma.media.findMany({
+    where: conditions,
+    orderBy: { [sortBy]: order },
+    take: limit,
+    skip: offset,
+  });
+
+  return media;
 }
 
 export async function mediaId(id){

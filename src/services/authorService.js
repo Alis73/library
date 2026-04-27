@@ -2,8 +2,8 @@ import { findAuthorByID, allAuhtors, newAuthor, deleteAuthorRecord , updateAutho
 import { findMediaByAuthorId, deleteMediaByAuthorId } from '../repositories/mediaRepo.js';
 import { findCheckedOutCopies, deleteMediaCopies } from '../repositories/mediaCopyRepo.js';
 
-export async function getAllAuthors() {
-  return await allAuhtors();
+export async function getAllAuthors(options) {
+  return await allAuhtors(options);
 }
 
 export async function getAuthorById(id) {

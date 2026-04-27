@@ -2,8 +2,8 @@ import {allMedia, mediaId, updateMediaById,createMediaRecord, findExistingMedia,
 import {findAuthorByID} from '../repositories/authorsRepo.js';
 import {createCopy, findCheckedOutCopies, deleteMediaCopies} from '../repositories/mediaCopyRepo.js';
 
-export async function getAllMedia(){
-    return await allMedia();
+export async function getAllMedia(options){
+    return await allMedia(options);
 }
 
 export async function getMediaById(id){

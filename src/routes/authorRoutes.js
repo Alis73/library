@@ -3,6 +3,9 @@ import { getAllAuthorsHandler, getAuthorByIdHandler, createAuthorHandler, delete
 import {validateID} from '../middleware/paramValidator.js';
 import {validateCreateAuthor, validateUpdateAuthor} from '../middleware/authorValidator.js';
 
+import { authenticate } from '../middleware/authenticate.js';
+import { authorizeRoles } from '../middleware/authorizeRoles.js';
+
 const router = express.Router();
 
 router.get('/', getAllAuthorsHandler);

@@ -4,10 +4,30 @@ import {getAllMedia,
   createMedia, 
   deleteMedia} from '../services/mediaService.js';
 
+  
+export async function getAllMediaHandler(req, res, next) {
+  try {
+    const {
+      search = '',
+      sortBy = 'title',
+      order = 'asc',
+      offset = 0,
+      limit = 10,
+    } = req.query;
 
-export async function getAllMediaHandler(req,res){
-    let media = await getAllMedia();
-        res.status(200).json(media);
+    const options = {
+      search,
+      sortBy,
+      order,
+      offset: parseInt(offset),
+      limit: parseInt(limit),
+    };
+
+    const media = await getAllMedia(options);
+    res.status(200).json(media);
+  } catch (err) {
+    next(err);
+  }
 }
 
 export async function getMediaByIdHandler(req,res,next){

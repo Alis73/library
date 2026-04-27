@@ -10,8 +10,8 @@ import jwt from 'jsonwebtoken';
 
 
 
-export async function getAllUsers() {
-  return getAll();
+export async function getAllUsers(options) {
+  return getAll(options);
 }
 
 export async function getUserByID(ID){

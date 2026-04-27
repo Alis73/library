@@ -2,7 +2,23 @@ import { getAllAuthors, getAuthorById, createAuthor, deleteAuthor, updateAuthor 
 
 export async function getAllAuthorsHandler(req, res, next) {
   try {
-    const authors = await getAllAuthors();
+    const {
+      search = '',
+      sortBy = 'name',
+      order = 'asc',
+      offset = 0,
+      limit = 10,
+    } = req.query;
+
+    const options = {
+      search,
+      sortBy,
+      order,
+      offset: parseInt(offset),
+      limit: parseInt(limit),
+    };
+
+    const authors = await getAllAuthors(options);
     res.status(200).json(authors);
   } catch (err) {
     next(err);

@@ -7,6 +7,8 @@ import { getAllUsersHandler,
 import {validateID} from '../middleware/paramValidator.js';
 import { validateUpdateUser } from '../middleware/userValidators.js';
 
+import { authenticate } from '../middleware/authenticate.js';
+
 
 
 

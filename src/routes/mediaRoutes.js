@@ -7,6 +7,8 @@ import {getAllMediaHandler,
 import {validateID} from '../middleware/paramValidator.js';
 import {validateCreateMedia, validateUpdateMedia} from '../middleware/mediaValidator.js'
 
+import { authenticate } from '../middleware/authenticate.js';
+
 
 const router = express.Router();
 

@@ -1,9 +1,29 @@
 import prisma from '../config/db.js';
 
 
-export async function getAll() {
-  const users = await prisma.user.findMany({omit: { password:true}});
-  return users;
+export async function getAll({ search, sortBy, order, offset, limit }) {
+  const conditions = {};
+
+  if (search) {
+    conditions.OR = [
+      { name: { contains: search, mode: 'insensitive' } },
+      { email: { contains: search, mode: 'insensitive' } },
+    ];
+  }
+
+  return await prisma.user.findMany({
+    where: conditions,
+    orderBy: { [sortBy]: order },
+    take: limit,
+    skip: offset,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+     
+    }
+  });
 }
 
 export async function getByID(id) {

@@ -5,9 +5,21 @@ export async function findAuthorByID(id){
     const author = await prisma.author.findUnique({where: {id}});
     return author;
 }
-export async function allAuhtors(){
-    const authors = await prisma.author.findMany();
-    return authors;
+export async function allAuhtors({ search, sortBy, order, offset, limit }) {
+  const conditions = {};
+
+  if (search) {
+    conditions.OR = [
+      { name: { contains: search, mode: 'insensitive' } },
+    ];
+  }
+
+  return await prisma.author.findMany({
+    where: conditions,
+    orderBy: { [sortBy]: order },
+    take: limit,
+    skip: offset,
+  });
 }
 
 export async function newAuthor(data){

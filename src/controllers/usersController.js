@@ -6,9 +6,29 @@ import {getAllUsers,
 
 
 
-export async function getAllUsersHandler(req, res){
-    let users = await getAllUsers();
+export async function getAllUsersHandler(req, res, next) {
+  try {
+    const {
+      search = '',
+      sortBy = 'name',
+      order = 'asc',
+      offset = 0,
+      limit = 10,
+    } = req.query;
+
+    const options = {
+      search,
+      sortBy,
+      order,
+      offset: parseInt(offset),
+      limit: parseInt(limit),
+    };
+
+    const users = await getAllUsers(options);
     res.status(200).json(users);
+  } catch (err) {
+    next(err);
+  }
 }
 
 export async function getUserByIDHandler(req, res){

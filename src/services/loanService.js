@@ -106,6 +106,14 @@ export async function updateLoanStatus(id){
         throw err;
 
     }
+
+    // check if loan has already been returned
+  if (updatedLoan.returnDate !== null) {
+    const err = new Error(`Loan #${id} has already been checked in`);
+    err.status = 409;
+    throw err;
+  }
+
     return updatedLoan;
 
 }

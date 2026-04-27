@@ -16,11 +16,11 @@ const router = express.Router();
 
 
 router.get('/', authenticate, authorizeRoles('EMPLOYEE','ADMIN'), getAllLoansHandler);  //doesnt take a body
-router.get('/my-loans', authenticate, authorizeRoles('GUEST'), getMyLoansHandler);
-router.get('/:id', authenticate, authorizeRoles('EMPLOYEE', 'ADMIN'), validateID, getLoanByIDHandler);
+router.get('/my-loans', authenticate, authorizeRoles('GUEST'), getMyLoansHandler); //
+router.get('/:id', authenticate, authorizeRoles('EMPLOYEE', 'ADMIN'), validateID, getLoanByIDHandler);//
 router.post('/', authenticate, authorizeRoles('EMPLOYEE','ADMIN'), validateCreateLoan, createLoanHandler);
 router.delete('/:id',validateID, deleteLoanHandler);
-router.put('/:id',validateID, updateLoanHandler);
+router.put('/:id', authenticate, authorizeRoles('EMPLOYEE', 'ADMIN'),validateID, updateLoanHandler);
 
 
 

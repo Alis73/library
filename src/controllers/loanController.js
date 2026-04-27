@@ -43,13 +43,20 @@ export async function deleteLoanHandler(req,res,next){
 }
 
 export async function updateLoanHandler(req,res,next){
-    try{
+     try {
     const id = parseInt(req.params.id);
     const updatedLoan = await updateLoanStatus(id);
-    res.status(200).json(updatedLoan);
-    }catch (err) {
-        next(err);
-    }
+    
+    res.status(200).json({
+      loanId: updatedLoan.id,
+      borrowerId: updatedLoan.borrowerId,
+      checkOutDate: updatedLoan.checkoutDate,
+      dueDate: updatedLoan.dueDate,
+      checkedInDate: updatedLoan.returnDate
+    });
+  } catch (err) {
+    next(err);
+  }
 }
 
 export async function getMyLoansHandler(req, res, next) {

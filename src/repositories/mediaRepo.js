@@ -38,3 +38,16 @@ export async function deleteMediaRecord(id) {
     where: { id }
   });
 }
+
+export async function findMediaByAuthorId(authorId) {
+  return await prisma.media.findMany({
+    where: { authorId }
+  });
+}
+
+export async function deleteMediaByAuthorId(authorId) {
+  return await prisma.media.deleteMany({
+    where: { authorId }
+  });
+}
+

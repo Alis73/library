@@ -75,3 +75,4 @@ export async function deleteMedia(id) {
   // then delete media
   return await deleteMediaRecord(id);
 }
+

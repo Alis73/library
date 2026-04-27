@@ -1,8 +1,8 @@
 import {signUp, logIn} from '../services/authService.js';
 
 export async function signUpHandler(req, res){
-    const {email, name, password} = req.body;
-    const newUser = await signUp(email, name, password);
+    const {email, name, password, role} = req.body;
+    const newUser = await signUp(email, name, password, role);
     res.status(201).json(newUser);
 }
 

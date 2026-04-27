@@ -4,6 +4,7 @@ import usersRoutes from './routes/usersRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import loanRoutes from './routes/loanRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
+import authorRoutes from './routes/authorRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,6 +16,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/loans', loanRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/author', authorRoutes);
 
 
 

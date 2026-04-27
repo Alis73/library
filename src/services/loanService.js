@@ -27,7 +27,12 @@ export async function getLoanById(id){
 export async function createLoan(userId, copyIds) {
 
     // Rule 1 — check if user exists
-  await getByID(userId);
+  const exist = await getByID(userId);
+  if(!exist){
+    const error = new Error(`User with ID ${userId} not found`);
+    error.status = 404;
+    throw error;
+  }
 
   // Rule 2 — check user hasn't exceeded 3 items
   const activeItems = await countActiveItems(userId);

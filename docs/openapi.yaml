@@ -7,7 +7,7 @@ info:
 
 servers:
   - url: http://localhost:8080/api
-  - url: https://library-api-service-hpm9.onrender.com
+  - url: https://library-api-service-hpm9.onrender.com/api
     description: Production server
 
 tags:

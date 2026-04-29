@@ -1,10 +1,14 @@
 import express from 'express';
 import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
+import yaml from 'js-yaml';
+import fs from 'fs';
 import usersRoutes from './routes/usersRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import loanRoutes from './routes/loanRoutes.js';
 import mediaRoutes from './routes/mediaRoutes.js';
-import authorRoutes from './routes/authorRoutes.js'
+import authorRoutes from './routes/authorRoutes.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +16,15 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 if (process.env.NODE_ENV !== 'test') app.use(morgan('tiny'));
 
+let specs;
+try{
+specs = yaml.load(fs.readFileSync('./docs/openapi.yaml', 'utf8'));
+}catch(error){
+    console.log('Failed to load openapi Specification', error);
+    process.exit(1);
+}
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api/users', usersRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/loan', loanRoutes);

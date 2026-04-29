@@ -19,13 +19,13 @@ import { authorizeRoles } from '../middleware/authorizeRoles.js';
 
 const router = express.Router();
 
-router.get('/me', authenticate, getMyProfileHandler); //
-router.get('/',  authenticate, authorizeRoles('EMPLOYEE','ADMIN'), getAllUsersHandler);//
-router.get('/:id', authenticate, authorizeRoles('EMPLOYEE','ADMIN'), validateID, getUserByIDHandler);//
-router.put('/me', authenticate, validateUpdateUser, updateMyProfileHandler);
-router.put('/:id', authenticate, authorizeRoles('EMPLOYEE', 'ADMIN'), validateID, validateUpdateUser, updateUserHandler);
-router.delete('/me', authenticate, removeMyProfileHandler);
-router.delete('/:id', authenticate, authorizeRoles('ADMIN'), validateID, removeUserHandler);
+router.get('/me', authenticate, getMyProfileHandler); //2
+router.get('/',  authenticate, authorizeRoles('EMPLOYEE','ADMIN'), getAllUsersHandler);//1
+router.get('/:id', authenticate, authorizeRoles('EMPLOYEE','ADMIN'), validateID, getUserByIDHandler);//5
+router.put('/me', authenticate, validateUpdateUser, updateMyProfileHandler); //3
+router.put('/:id', authenticate, authorizeRoles('EMPLOYEE', 'ADMIN'), validateID, validateUpdateUser, updateUserHandler); //6
+router.delete('/me', authenticate, removeMyProfileHandler); //4
+router.delete('/:id', authenticate, authorizeRoles('ADMIN'), validateID, removeUserHandler); //7
 
 
 export default router

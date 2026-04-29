@@ -1,0 +1,1055 @@
+openapi: 3.0.3
+
+info:
+  title: Library API
+  version: 1.0.0
+  description: API documentation for the Library API
+
+servers:
+  - url: http://localhost:8080/api
+
+tags:
+  - name: Media
+    description: Operations related to Media items (books, movies, and DVDS)
+  - name: Auth
+    description: User authentication endpoints
+  - name: Users
+    description: Operations related to user management
+  - name: Loans
+    description: Operations related to loan management
+  - name: Authors
+    description: Operations related to authors
+  
+paths:
+  /auth/signUp:
+    post:
+      tags: 
+       - Auth
+      summary: Create a new user account
+      description: Register a new user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpInput'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login to have access to protected endpoints.
+      description: Authenticate with valid credentials to receive a JWT access token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                 error:
+                  type: string
+                example:
+                 error: Invalid Credentials
+              
+ #users
+  /users/me:
+    get:
+      tags: 
+       - Users
+      summary: Get the logged in user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+ 
+    put:
+      tags: 
+       - Users
+      summary: Update the logged in user profile
+      description: Only email and password can be updated.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+ 
+    delete:
+      tags: 
+       - Users
+      summary: Delete the logged in user account
+      description: Returns 204 with no content.
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: User deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+ 
+  /users:
+    get:
+      tags: 
+       - Users
+      summary: Get all users
+      description: Get a list of all users. Requires EMPLOYEE or ADMIN.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+ 
+  /users/{id}:
+    get:
+      tags: 
+       - Users
+      summary: Get a specific user by ID
+      description: Requires EMPLOYEE or ADMIN.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+ 
+    put:
+      tags: 
+       - Users
+      summary: Update a user by ID
+      description: Requires EMPLOYEE or ADMIN.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+ 
+    delete:
+      tags: 
+       - Users
+      summary: Delete a user by ID
+      description: Requires ADMIN only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          $ref: '#/components/responses/DeletedMessage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+ 
+  # ==================== AUTHORS ====================
+  /author:
+    get:
+      tags: 
+       - Authors
+      summary: Get all authors
+      description: Get a list of all authors. Accessible by anyone.
+      parameters:
+        - name: search
+          in: query
+          schema:
+           type: string
+      
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            example: name
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: A list of authors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+ 
+    post:
+      tags: 
+       - Authors
+      summary: Create a new author
+      description: Requires EMPLOYEE or ADMIN. Author name must be unique.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/AuthorResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+ 
+  /author/{id}:
+    get:
+      tags: 
+       - Authors
+      summary: Get an author by ID
+      description: Requires EMPLOYEE or ADMIN.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthorResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+ 
+    put:
+      tags: 
+       - Authors
+      summary: Update an author by ID
+      description: Requires EMPLOYEE or ADMIN. Name is required.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Resource ID — must be a positive integer
+          schema:
+            type: integer
+            example: 7
+            
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+              example:
+                name: Update Name
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthorResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+ 
+    delete:
+      tags: 
+       - Authors
+      summary: Delete an author by ID
+      description: Requires ADMIN. Cascades — deletes all media and copies. Cannot delete if any copies are checked out.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Resource ID — must be a positive integer
+          schema:
+            type: integer
+            example: 7
+      responses:
+        '200':
+          $ref: '#/components/responses/DeletedMessage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+ 
+  # ==================== MEDIA ====================
+  /media:
+    get:
+      tags: 
+       - Media
+      summary: Get all media
+      description: Accessible by anyone. Supports search by title.
+      parameters:
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: A list of media items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+ 
+    post:
+      tags: 
+       - Media
+      summary: Create a new media item
+      description: Requires EMPLOYEE or ADMIN. Author must exist. Cannot duplicate same title, author, and publication year.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMediaInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/MediaResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+ 
+  /media/{id}:
+    get:
+      tags: 
+       - Media
+      summary: Get a media item by ID
+      description: Accessible by anyone.
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+ 
+    put:
+      tags: 
+       - Media
+      summary: Update a media item by ID
+      description: Requires EMPLOYEE or ADMIN. All fields are optional.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMediaInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+ 
+    delete:
+      tags: 
+       - Media
+      summary: Delete a media item by ID
+      description: Requires ADMIN. Cannot delete if copies are checked out. Returns deleted media object.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+ 
+  # ==================== LOANS ====================
+  /loan:
+    get:
+      tags: 
+       - Loans
+      summary: Get all loans
+      description: Requires EMPLOYEE or ADMIN.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of loans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoanRaw'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+ 
+    post:
+      tags: 
+       - Loans
+      summary: Create a new loan
+      description: Requires EMPLOYEE or ADMIN. Max 3 items per user. Due date is 30 days from checkout.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, copyIds]
+              properties:
+                userId:
+                  type: integer
+                copyIds:
+                 type: array
+                items:
+                 type: integer
+              example:
+                userId: 2
+                copyIds: [2,4,5]
+      responses:
+        '200':
+          $ref: '#/components/responses/LoanRawResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+ 
+  /loan/my-loans:
+    get:
+      tags: 
+       - Loans
+      summary: Get the logged in user's loans
+      description: Requires GUEST authentication.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of the user's loans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoanRaw'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+ 
+  /loan/{id}:
+    get:
+      tags: 
+       - Loans
+      summary: Get a specific loan by ID
+      description: Requires EMPLOYEE or ADMIN.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          $ref: '#/components/responses/LoanRawResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+ 
+    put:
+      tags: 
+       - Loans
+      summary: Check in a loan
+      description: Requires EMPLOYEE or ADMIN. Cannot check in an already returned loan.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Loan ID — must be a positive integer
+          schema:
+           type: integer
+           example: 1
+      responses:
+        '200':
+          description: Loan checked in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanCheckedIn'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+ 
+    delete:
+      tags: 
+       - Loans
+      summary: Delete a loan record
+      description: Requires ADMIN. Cannot delete an active loan. Deletes loan_copies records first.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          $ref: '#/components/responses/DeletedMessage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+ 
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+ 
+  parameters:
+    ResourceID:
+      name: id
+      in: path
+      required: true
+      description: Resource ID — must be a positive integer
+      schema:
+        type: integer
+        example: 1
+ 
+    Search:
+      name: search
+      in: query
+      schema:
+        type: string
+        example: clean
+ 
+    SortBy:
+      name: sortBy
+      in: query
+      schema:
+        type: string
+        example: title
+ 
+    Order:
+      name: order
+      in: query
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: asc
+ 
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 10
+ 
+    Offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        default: 0
+ 
+  responses:
+    UserResponse:
+      description: User object
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+ 
+    AuthorResponse:
+      description: Author object
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Author'
+ 
+    MediaResponse:
+      description: Media object
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Media'
+ 
+    LoanRawResponse:
+      description: Loan object
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoanRaw'
+ 
+    DeletedMessage:
+      description: Resource deleted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: Resource has been deleted
+ 
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Resource not found
+ 
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+          example:
+            errors:
+              - ID must be a positive integer
+ 
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+          example:
+            errors:
+              - Field is required
+ 
+    Unauthorized:
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Not authenticated. PLease provide a valid token
+ 
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+             Forbidden: insufficient permission.
+ 
+    Conflict:
+      description: Conflict with current state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Resource already exists or conflict
+ 
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [GUEST, EMPLOYEE, ADMIN]
+      example:
+        id: 1
+        name: John Doe
+        email: john@test.com
+        role: GUEST
+ 
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      example:
+        id: 1
+        name: Robert Martin
+ 
+    Media:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        mediaType:
+          type: string
+          enum: [BOOK, MAGAZINE, DVD]
+        publicationYear:
+          type: string
+          format: date-time
+          nullable: true
+        authorId:
+          type: integer
+      example:
+        id: 1
+        title: Clean Code
+        mediaType: BOOK
+        publicationYear: '2008-01-01T00:00:00.000Z'
+        authorId: 1
+ 
+    LoanRaw:
+      type: object
+      properties:
+        id:
+          type: integer
+        checkoutDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        returnDate:
+          type: string
+          format: date-time
+          nullable: true
+        borrowerId:
+          type: integer
+      example:
+        id: 1
+        checkoutDate: '2026-04-27T12:26:08.215Z'
+        dueDate: '2026-05-27T12:26:08.215Z'
+        returnDate: null
+        borrowerId: 3
+ 
+    LoanCheckedIn:
+      type: object
+      description: Returned by PUT /loans/:id with renamed fields
+      properties:
+        loanId:
+          type: integer
+        borrowerId:
+          type: integer
+        checkOutDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        checkedInDate:
+          type: string
+          format: date-time
+          nullable: true
+      example:
+        loanId: 1
+        borrowerId: 3
+        checkOutDate: '2026-04-27T12:26:08.215Z'
+        dueDate: '2026-05-27T12:26:08.215Z'
+        checkedInDate: '2026-04-28T10:00:00.000Z'
+ 
+    AccessToken:
+      type: object
+      properties:
+        accessToken:
+          type: string
+      example:
+        accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ 
+    SignUpInput:
+      type: object
+      required: [email, password]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          maxLength: 64
+        role:
+          type: string
+          enum: [GUEST, EMPLOYEE, ADMIN]
+      example:
+        name: John Cena
+        email: cena1@test.com
+        password: password123
+ 
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      example:
+        email: cena1@test.com
+        password: password123
+ 
+    UpdateUserInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          maxLength: 64
+      example:
+        email: newemail@test.com
+ 
+    AuthorInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+      example:
+        name: The Weekend
+ 
+    CreateMediaInput:
+      type: object
+      required: [title, authorId, mediaType, copies]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        authorId:
+          type: integer
+          minimum: 1
+        publicationYear:
+          type: string
+          format: date
+        mediaType:
+          type: string
+          enum: [BOOK, MAGAZINE, DVD]
+        copies:
+          type: integer
+          minimum: 1
+      example:
+        title: Society of The Snow
+        authorId: 5
+        publicationYear: '2008-01-01'
+        mediaType: BOOK
+        copies: 1
+ 
+    UpdateMediaInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        authorId:
+          type: integer
+          minimum: 1
+        publicationYear:
+          type: string
+          format: date
+        mediaType:
+          type: string
+          enum: [BOOK, MAGAZINE, DVD]
+      example:
+        title: Updated Title
+ 
+    CreateLoanInput:
+      type: object
+      required: [userId, copyIds]
+      properties:
+        userId:
+          type: integer
+          minimum: 1
+        copyIds:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            minimum: 1
+      example:
+        userId: 2
+        copyIds: [1, 2]
+ 
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: An error occurred
+ 
+    ValidationError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+      example:
+        errors:
+          - Field is required

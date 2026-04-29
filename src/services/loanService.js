@@ -42,12 +42,17 @@ export async function createLoan(userId, copyIds) {
     error.status = 409;
     throw error;
   }
-
+//checks if copies exist and are available
   for (const copyId of copyIds) {
   const copy = await findCopyById(copyId);
   if (!copy) {
     const err = new Error(`Copy with ID ${copyId} does not exist`);
     err.status = 404;
+    throw err;
+  }
+  if (copy.currentStatus !== 'AVAILABLE') {
+    const err = new Error(`Copy with ID ${copyId} is not available`);
+    err.status = 409;
     throw err;
   }
 }
@@ -98,23 +103,24 @@ export async function getRidLoan(loanId){
 }
 
 export async function updateLoanStatus(id){
-    const updatedLoan = await updateLoan(id);
+     // Step 1 — fetch the existing loan first
+  const existingLoan = await getLoanById(id);
+  if (!existingLoan) {
+    const err = new Error(`Loan with ID ${id} can not be found`);
+    err.status = 404;
+    throw err;
+  }
 
-    if(!updatedLoan){
-        const err = new Error(`Loan with ID ${id} can not be found`);
-        err.status = 404;
-        throw err;
-
-    }
-
-    // check if loan has already been returned
-  if (updatedLoan.returnDate !== null) {
+  // Step 2 — check if already returned before touching anything
+  if (existingLoan.returnDate !== null) {
     const err = new Error(`Loan #${id} has already been checked in`);
     err.status = 409;
     throw err;
   }
 
-    return updatedLoan;
+  // Step 3 — safe to update now
+  const updatedLoan = await updateLoan(id);
+  return updatedLoan;
 
 }
 
